@@ -1,0 +1,49 @@
+<section class="filters" aria-labelledby="filters-heading">
+  <div class="filters__header">
+    <h2 id="filters-heading" class="filters__title">Search &amp; Filters</h2>
+    <button type="button" class="filters__reset" (click)="resetFilters()" aria-label="Reset all filters">
+      Reset
+    </button>
+  </div>
+
+  <form [formGroup]="filterForm" class="filters__form">
+    <div class="filters__field">
+      <label for="callsign-filter">Search by Callsign</label>
+      <input
+        id="callsign-filter"
+        type="search"
+        formControlName="callsign"
+        placeholder="e.g. AI-687 or AIC687"
+        autocomplete="off"
+        aria-describedby="callsign-hint"
+      />
+      <span id="callsign-hint" class="filters__hint">Partial matches supported</span>
+    </div>
+
+    <div class="filters__field">
+      <label for="status-filter">Filter by Status</label>
+      <select id="status-filter" formControlName="status">
+        <option value="">All Statuses</option>
+        <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+      </select>
+    </div>
+
+    <ng-container *ngIf="airports$ | async as airports">
+      <div class="filters__field">
+        <label for="origin-filter">Filter by Origin</label>
+        <select id="origin-filter" formControlName="origin">
+          <option value="">All Origins</option>
+          <option *ngFor="let code of airports.origins" [value]="code">{{ code }}</option>
+        </select>
+      </div>
+
+      <div class="filters__field">
+        <label for="destination-filter">Filter by Destination</label>
+        <select id="destination-filter" formControlName="destination">
+          <option value="">All Destinations</option>
+          <option *ngFor="let code of airports.destinations" [value]="code">{{ code }}</option>
+        </select>
+      </div>
+    </ng-container>
+  </form>
+</section>

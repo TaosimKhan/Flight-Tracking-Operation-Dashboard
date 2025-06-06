@@ -1,0 +1,83 @@
+<div class="dashboard">
+  <header class="dashboard__header">
+    <div class="dashboard__brand">
+      <div class="dashboard__logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="dashboard__title">Flight Operations Dashboard</h1>
+        <p class="dashboard__subtitle">Real-time flight tracking &amp; monitoring</p>
+      </div>
+    </div>
+    <div class="dashboard__meta">
+      <span class="dashboard__live-indicator" role="status" aria-live="polite">
+        <span class="dashboard__live-dot" aria-hidden="true"></span>
+        Live Monitoring
+      </span>
+      <time class="dashboard__timestamp" [attr.datetime]="currentTime.toISOString()">
+        {{ currentTime | date:'medium' }}
+      </time>
+    </div>
+  </header>
+
+  <section class="dashboard__kpis" aria-label="Operations KPIs">
+    <app-kpi-cards></app-kpi-cards>
+  </section>
+
+  <div class="dashboard__body">
+    <section class="dashboard__map-area" aria-label="Flight map">
+      <app-flight-map></app-flight-map>
+    </section>
+
+    <section class="dashboard__section dashboard__filters" aria-label="Search and filters">
+      <app-flight-filters></app-flight-filters>
+    </section>
+
+    <section class="dashboard__section flight-list" aria-labelledby="flight-list-heading">
+      <div class="flight-list__header">
+        <h2 id="flight-list-heading" class="flight-list__title">Flights</h2>
+        <span class="flight-list__count" *ngIf="flightCount$ | async as count">{{ count }}</span>
+      </div>
+
+      <ul class="flight-list__items" role="listbox" aria-label="Flight list">
+        <ng-container *ngIf="filteredFlights$ | async as flights">
+          <li
+            *ngFor="let flight of flights"
+            class="flight-list__item"
+            [class.flight-list__item--selected]="isSelected(flight, (selectedFlight$ | async) ?? null)"
+            role="option"
+            [attr.aria-selected]="isSelected(flight, (selectedFlight$ | async) ?? null)"
+            tabindex="0"
+            (click)="selectFlight(flight)"
+            (keydown.enter)="selectFlight(flight)"
+            (keydown.space)="selectFlight(flight); $event.preventDefault()"
+          >
+            <div class="flight-list__item-header">
+              <span class="flight-list__number">{{ flight.flightNumber }}</span>
+              <span [class]="getStatusClass(flight.status)">{{ flight.status }}</span>
+            </div>
+            <span class="flight-list__callsign">{{ flight.callsign }}</span>
+            <div class="flight-list__route">
+              <span>{{ flight.origin.code }}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+              <span>{{ flight.destination.code }}</span>
+            </div>
+          </li>
+
+          <li *ngIf="flights.length === 0" class="flight-list__empty" role="status">
+            No flights match your filters.
+          </li>
+        </ng-container>
+      </ul>
+    </section>
+
+    <section class="dashboard__section dashboard__details" aria-label="Flight details">
+      <app-flight-details-panel></app-flight-details-panel>
+    </section>
+  </div>
+</div>

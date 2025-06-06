@@ -1,0 +1,103 @@
+<div class="map-wrapper">
+  <div #mapContainer class="map-container" role="application" aria-label="Interactive India flight tracking map"></div>
+
+  <aside class="weather-panel" aria-label="Weather overlay controls">
+    <h3 class="weather-panel__title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+      </svg>
+      Weather Overlays
+    </h3>
+
+    <div class="weather-panel__toggles">
+      <label class="weather-panel__toggle">
+        <input
+          type="checkbox"
+          [checked]="overlayState.precipitation"
+          (change)="togglePrecipitation()"
+          [disabled]="weatherLoading"
+        />
+        <span class="weather-panel__toggle-label">
+          <span class="weather-panel__swatch weather-panel__swatch--radar"></span>
+          Precipitation Radar
+        </span>
+      </label>
+
+      <label class="weather-panel__toggle">
+        <input
+          type="checkbox"
+          [checked]="overlayState.clouds"
+          (change)="toggleClouds()"
+          [disabled]="weatherLoading"
+        />
+        <span class="weather-panel__toggle-label">
+          <span class="weather-panel__swatch weather-panel__swatch--clouds"></span>
+          Cloud Cover
+        </span>
+      </label>
+
+      <label class="weather-panel__toggle">
+        <input
+          type="checkbox"
+          [checked]="overlayState.airportConditions"
+          (change)="toggleAirportConditions()"
+        />
+        <span class="weather-panel__toggle-label">
+          <span class="weather-panel__swatch weather-panel__swatch--airport"></span>
+          Airport Conditions
+        </span>
+      </label>
+    </div>
+
+    <div class="weather-panel__slider" *ngIf="overlayState.precipitation || overlayState.clouds">
+      <label for="overlay-opacity">Overlay Opacity</label>
+      <input
+        id="overlay-opacity"
+        type="range"
+        min="0.2"
+        max="0.9"
+        step="0.05"
+        [value]="overlayState.opacity"
+        (input)="onOpacityChange($event)"
+      />
+      <span class="weather-panel__slider-value">{{ (overlayState.opacity * 100) | number:'1.0-0' }}%</span>
+    </div>
+
+    <label class="weather-panel__toggle weather-panel__toggle--sub" *ngIf="overlayState.precipitation">
+      <input
+        type="checkbox"
+        [checked]="overlayState.animateRadar"
+        (change)="toggleRadarAnimation()"
+      />
+      <span class="weather-panel__toggle-label">Animate radar</span>
+    </label>
+
+    <p class="weather-panel__timestamp" *ngIf="overlayState.precipitation && radarTimestamp">
+      Radar frame: {{ radarTimestamp }}
+    </p>
+
+    <p class="weather-panel__status weather-panel__status--loading" *ngIf="weatherLoading" role="status">
+      Loading weather data…
+    </p>
+
+    <p class="weather-panel__status weather-panel__status--error" *ngIf="weatherError" role="alert">
+      {{ weatherError }}
+      <button type="button" class="weather-panel__retry" (click)="retryWeatherLoad()">Retry</button>
+    </p>
+  </aside>
+
+  <div class="map-legend" aria-label="Map legend">
+    <span class="map-legend__item">
+      <span class="map-legend__dot map-legend__dot--active"></span> Active
+    </span>
+    <span class="map-legend__item">
+      <span class="map-legend__dot map-legend__dot--delayed"></span> Delayed
+    </span>
+    <span class="map-legend__item">
+      <span class="map-legend__dot map-legend__dot--scheduled"></span> Scheduled
+    </span>
+    <span class="map-legend__item">
+      <span class="map-legend__dot map-legend__dot--arrived"></span> Arrived
+    </span>
+  </div>
+</div>

@@ -1,0 +1,66 @@
+<section class="details-panel" aria-labelledby="details-heading">
+  <h2 id="details-heading" class="details-panel__title">Flight Details</h2>
+
+  <ng-container *ngIf="selectedFlight$ | async as flight; else noSelection">
+    <div class="details-panel__header">
+      <div>
+        <span class="details-panel__flight-number">{{ flight.flightNumber }}</span>
+        <span class="details-panel__callsign">{{ flight.callsign }}</span>
+      </div>
+      <button
+        type="button"
+        class="details-panel__close"
+        (click)="clearSelection()"
+        aria-label="Close flight details">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <span [class]="getStatusClass(flight.status)" role="status">{{ flight.status }}</span>
+
+    <dl class="details-panel__grid">
+      <div class="details-panel__item">
+        <dt>Aircraft Type</dt>
+        <dd>{{ flight.aircraftType }}</dd>
+      </div>
+      <div class="details-panel__item">
+        <dt>Origin</dt>
+        <dd>
+          <strong>{{ flight.origin.code }}</strong>
+          <span>{{ flight.origin.name }}</span>
+        </dd>
+      </div>
+      <div class="details-panel__item">
+        <dt>Destination</dt>
+        <dd>
+          <strong>{{ flight.destination.code }}</strong>
+          <span>{{ flight.destination.name }}</span>
+        </dd>
+      </div>
+      <div class="details-panel__item">
+        <dt>Est. Departure</dt>
+        <dd>{{ flight.estimatedDeparture | date:'medium' }}</dd>
+      </div>
+      <div class="details-panel__item">
+        <dt>Est. Arrival</dt>
+        <dd>{{ flight.estimatedArrival | date:'medium' }}</dd>
+      </div>
+      <div class="details-panel__item">
+        <dt>Current Position</dt>
+        <dd>{{ flight.currentLat | number:'1.2-2' }}°, {{ flight.currentLng | number:'1.2-2' }}°</dd>
+      </div>
+    </dl>
+  </ng-container>
+
+  <ng-template #noSelection>
+    <div class="details-panel__empty" role="status">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+      </svg>
+      <p>Select a flight on the map or from the list to view details.</p>
+    </div>
+  </ng-template>
+</section>
